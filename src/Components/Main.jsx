@@ -1,19 +1,28 @@
 import React from 'react';
-import MealDetails from './MealDetails';
-import MealList from './MealList';
+import { Suspense } from 'react';
 import SearchBar from './SearchBar';
 import Loader from './Loader';
 import { useGlobalContext } from '../Context/ContextApi';
 
+// lazy import 
+const MealList = React.lazy(() => import("./MealList"))
+const MealDetails = React.lazy(() => import("./MealDetails"))
+
 const Main = () => {
-    const { loader, showPopup } = useGlobalContext();
+    const { showPopup } = useGlobalContext();
     return (
         <>
             <div className="container">
                 <div className="meal-wrapper">
                     <SearchBar />
-                    {loader ? <Loader /> : <MealList />}
-                    {showPopup ? <MealDetails /> : <></>}
+                    <Suspense fallback={<Loader />}>
+                        <MealList />
+                    </Suspense>
+                    {showPopup ? 
+                        <Suspense fallback={<Loader />}>
+                            <MealDetails />
+                        </Suspense>
+                     : null}
                 </div>
             </div>
         </>
